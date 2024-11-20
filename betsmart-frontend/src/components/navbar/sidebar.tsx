@@ -23,9 +23,9 @@ const Sidebar = () => {
         <Link href="/profile" className="sidebar-link">
           <FaUser size={20} className="sidebar-icon" /> Profile
         </Link>
-        <Link href="/home" className="sidebar-link">
-          <FaTh size={20} className="sidebar-icon" /> Dashboard
-        </Link>
+        <Link href="/dashboard" className="sidebar-link">
+  <FaTh size={20} className="sidebar-icon" /> Dashboard
+</Link>
         <Link href="/history" className="sidebar-link">
           <FaClock size={20} className="sidebar-icon" /> History
         </Link>
@@ -34,7 +34,7 @@ const Sidebar = () => {
         <h3 className="sidebar-logo">BetSmart</h3>
         <div className="betsmart-logo">
           <img 
-            src="https://cdn.discordapp.com/attachments/1304631558472208394/1306825521866211338/image.png?ex=6738139c&is=6736c21c&hm=38dec34750214f8480a0d5bde14dcefe5bfc36bef4883a563de7e0afce840e60&" 
+            src="https://i.ibb.co/c6tbLXR/betsmartlogo.png" 
             alt="BetSmart Logo" 
             className="logo-image" 
           />
