@@ -1,5 +1,5 @@
 import Head from "next/head";
-import CreateWagerConfigs from "@/components/createWagerConfigs/CreateWagerConfigs";
+import CreateWagerConfigs from "@/components/CreateWagerConfigs/CreateWagerConfigs";
 
 export default function Home() {
   return (
