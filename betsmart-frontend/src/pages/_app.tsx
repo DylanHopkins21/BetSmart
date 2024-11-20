@@ -3,7 +3,7 @@ import type { AppProps } from "next/app";
 import Sidebar from "../components/navbar/sidebar";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const isLoggedIn = true; // Set this flag manually for now
+  const isLoggedIn = true; 
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
