@@ -3,6 +3,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import React, { useState } from 'react';
 import './CreateWagerConfigs.css';
 import { FaDollarSign } from "react-icons/fa";
+import Link from "next/link";
 
 /*
     props.classes : List of String of class names
@@ -169,7 +170,8 @@ export default function CreateWagerConfigs() {
                 {/* UPLOAD IMAGE */}
                 <div className='imageUpload'>
                     <h3 className="categoryLabel">Upload Image</h3>
-
+                    
+                    {/* Upload Button*/}
                     <Button
                         component="label"
                         role={undefined}
@@ -184,19 +186,19 @@ export default function CreateWagerConfigs() {
                             accept="image/*"
                         />
                     </Button>
-
-                    {image && <img src="image" alt="Uploaded Preview" />}
+                    
+                    {/* Display Uploaded Image*/}
+                    {image && <img src={image} alt="Uploaded Preview" className="uploaded-image"/>}
 
 
                     {/* SUBMIT BUTTON*/}
                     <div className='submitButton'>
                         <div className='buttonAligner'>
-                            <Button variant="contained">Submit</Button>
+                            <Link href='/dashboard' className='submit-button'>Submit</Link>
                         </div>
                     </div>
                 </div>
                 <div className='spacer'></div>
-
             </div>
         </div>
     )
