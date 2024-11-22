@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <Sidebar />
         </div>
       )}
-      <div style={{ flex: 1, padding: "2rem", backgroundColor: "#f9fafb", overflowY: "auto" }}>
+      <div style={{ flex: 1, backgroundColor: "#f9fafb", overflowY: "auto" }}>
         <Component {...pageProps} />
       </div>
     </div>

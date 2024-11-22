@@ -1,0 +1,27 @@
+.top-row {
+    display: flex;
+    flex-direction: row;
+    margin: 1rem;
+    padding: 1rem;
+}
+
+.spacer {
+    flex : 1;
+}
+
+.create-wager-button {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    background-color: #1e293b;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 16px;
+    max-width: fit-content;
+    transition: background-color 0.2s ease;
+    flex: 1;
+}
+.create-wager-button:hover {
+    background-color: #2563eb;
+}

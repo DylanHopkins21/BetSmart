@@ -1,0 +1,29 @@
+.whole-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px;
+    background-color: #00455ca6;
+}
+
+.page-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+}
+.spacer {
+    flex : 1;
+}
+
+.title-label {
+    background-color: #00171F;
+    flex: 1;
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    max-width: 40rem;
+}
