@@ -4,11 +4,10 @@ import React, { useState } from 'react';
 import './CreateWagerConfigs.css';
 import { FaDollarSign } from "react-icons/fa";
 import Link from "next/link";
-
+import EmailTag from '../EmailTag/EmailTag';
 /*
     props.classes : List of String of class names
     props.assignments : Dictionary w/ String class names as keys and List of String assignment names as values
-
 */
 
 
@@ -81,6 +80,16 @@ export default function CreateWagerConfigs() {
             setEmailList([...emailList, emailInput])
             setEmailInput("");
         }
+      }
+
+      const removeFromEmailList = (emailToRemove: string) => {
+            const ind = emailList.indexOf(emailToRemove);
+            if (ind != -1){
+                const newEmailList = [...emailList];
+                newEmailList.splice(ind, 1);
+                setEmailList(newEmailList);
+                console.log('Successfully removed' + emailToRemove)
+            }
       }
 
 
@@ -158,7 +167,7 @@ export default function CreateWagerConfigs() {
                     
                     <h3 className="emailList">
                         {emailList.map((email, index) => (
-                            <div key={index} className="email">{email}</div>
+                            <EmailTag key={index} email={email} removeFunc={removeFromEmailList}/>
                         ))}
                     </h3>
 
@@ -194,7 +203,7 @@ export default function CreateWagerConfigs() {
                     {/* SUBMIT BUTTON*/}
                     <div className='submitButton'>
                         <div className='buttonAligner'>
-                            <Link href='/dashboard' className='submit-button'>Submit</Link>
+                            <Link href='/dashboard' className='submit-button'>SUBMIT</Link>
                         </div>
                     </div>
                 </div>
