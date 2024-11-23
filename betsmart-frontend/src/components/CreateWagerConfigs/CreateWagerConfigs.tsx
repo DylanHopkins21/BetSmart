@@ -21,7 +21,6 @@ export default function CreateWagerConfigs() {
     const [currentClass, setCurrentClass] = useState("");
     const [currentAssignment, setCurrentAssignment] = useState("");
     const [wagerAmount, setWagerAmount] = useState(0);
-    const [error, setError] = useState(false);
     const [image, setImage] = useState("");
     const [emailList, setEmailList] = useState<string[]>([]);
     const [emailInput, setEmailInput] = useState("");
@@ -38,15 +37,13 @@ export default function CreateWagerConfigs() {
         width: 1,
       });
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleWagerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         if (/^\d*\.?\d*$/.test(value) && value) { // Validates numeric input
             const intValue = parseInt(value, 10);
             setWagerAmount(intValue);
-            setError(false);
-        } else {
+        } else if (!value) {
             setWagerAmount(0);
-            setError(true);
         }
       };
     
@@ -62,7 +59,14 @@ export default function CreateWagerConfigs() {
 
       const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement> ) => {
         const file = event.target.files?.[0];
+        const maxSize = 10 * 1024 * 1024; //10MB
+
         if (file) {
+
+            if (file.size > maxSize) {
+                alert("The file size exceeds the 10MB limit. Please upload a smaller file.");
+                return;
+            }
             const reader = new FileReader();
 
             reader.onload = () => {
@@ -77,10 +81,15 @@ export default function CreateWagerConfigs() {
       const handleEnterEmail = (event: React.KeyboardEvent<HTMLInputElement>) => {
         
         if (event.key === "Enter" && emailInput) {
-            setEmailList([...emailList, emailInput])
+            if (emailList.includes(emailInput)) {
+                alert("Email has already been added.")
+            } else {
+                setEmailList([...emailList, emailInput])
+            }
             setEmailInput("");
         }
       }
+
 
       const removeFromEmailList = (emailToRemove: string) => {
             const ind = emailList.indexOf(emailToRemove);
@@ -91,6 +100,7 @@ export default function CreateWagerConfigs() {
                 console.log('Successfully removed' + emailToRemove)
             }
       }
+
 
 
 
@@ -108,7 +118,7 @@ export default function CreateWagerConfigs() {
                     {/*CLASS SELECTION*/}
                     <h3 className="categoryLabel">Classes</h3>
                     <FormControl variant="filled" sx={{ m: 1, minWidth: 160}} className='custom-select'>
-                        <InputLabel id="class-select-label" className='custom-select'>Select a Class</InputLabel>
+                        <InputLabel id="class-select-label" className='custom-select'>Select Class</InputLabel>
                         <Select
                         labelId="class-select-label"
                         value={currentClass}
@@ -127,7 +137,7 @@ export default function CreateWagerConfigs() {
                     {/*ASSIGNMENT SELECTION*/}
                     <h3 className="categoryLabel">Assignment</h3>
                     <FormControl variant="filled" sx={{ m: 1, minWidth: 160}} className='custom-select'>
-                        <InputLabel id="assignment-select-label" className='custom-select'>Select a Assignment</InputLabel>
+                        <InputLabel id="assignment-select-label" className='custom-select'>Select Assignment</InputLabel>
                         <Select
                         labelId="assignment-select-label"
                         value={currentAssignment}
@@ -147,12 +157,10 @@ export default function CreateWagerConfigs() {
                     <h3 className="categoryLabel">Wager</h3>
                     <TextField
                         className='custom-select'
-                        label="Enter Wager Amount"
+                        label="Enter Wager Amount ($)"
                         variant="filled"
                         value={wagerAmount}
-                        onChange={handleChange}
-                        error={error}
-                        helperText={error ? "Invalid input" : ""}/>
+                        onChange={handleWagerChange}/>
                     <h3 className="categoryLabel">Invites</h3>
 
                     {/*ENTER EMAIL INVITES*/}
@@ -203,7 +211,16 @@ export default function CreateWagerConfigs() {
                     {/* SUBMIT BUTTON*/}
                     <div className='submitButton'>
                         <div className='buttonAligner'>
-                            <Link href='/dashboard' className='submit-button'>SUBMIT</Link>
+                        {/* Ensure all required fields are filled*/}
+                        {currentClass && currentAssignment && wagerAmount == 0 && emailList.length > 0 ? (
+                            <Link href="/dashboard" className="submit-button">
+                                SUBMIT
+                            </Link>
+                        ) : (
+                            <button onClick={() => alert('All required fields must be filled.')} className="submit-button">
+                                SUBMIT
+                            </button>
+                        )}
                         </div>
                     </div>
                 </div>
