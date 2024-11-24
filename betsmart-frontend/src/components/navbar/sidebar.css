@@ -45,7 +45,7 @@
   }
   
   .sidebar-add-button {
-    background-color: #1d4ed8;
+    background-color: #02709c;
     color: #fff;
     border: none;
     border-radius: 20%;
@@ -74,7 +74,7 @@
   
   
   .sidebar-link:hover {
-    background-color: #2563eb;
+    background-color: #02709c;
   }
   
   .sidebar-icon {
@@ -83,13 +83,13 @@
   
   .sidebar-footer {
     text-align: center;
-    margin-bottom: 2rem; 
+    margin-top: 4rem; 
 }
   
   .sidebar-logo {
-    margin: 0;
+    margin-top: -15;
     font-size: 30px;
-    font-weight: bold;
+    font-weight: 500;
   }
 
 
@@ -102,18 +102,16 @@
 
 .logo-image {
     width: 100%;
-    max-width: 75px; /* Adjust this size as needed */
+    max-width: 150px; /* Adjust this size as needed */
     height: auto;
 }
 
 .sidebar-logout .sidebar-link {
-  margin-bottom: 2rem; 
+  margin-top: 10rem; 
 }
 .sidebar-logout:hover .sidebar-link {
   background-color: #dc2626; /* A bright red color */
   color: #fff;
-  font-weight: bold;
-  
 }
 
 .sidebar-logout .sidebar-link:hover {

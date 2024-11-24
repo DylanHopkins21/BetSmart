@@ -27,7 +27,8 @@
   
   /* Modal box with slide animation */
   .modal {
-    background-color: white;
+    background-color: #00171F;
+    color: #fff;
     border-radius: 10px;
     width: 400px;
     max-width: 90%;
@@ -52,6 +53,7 @@
   
   /* Close button */
   .modal-close-button {
+    color: white;
     position: absolute;
     top: 10px;
     right: 10px;

@@ -7,12 +7,23 @@ import NotifModal from "./notifModal/notifModal";
 const Sidebar = () => {
   const [showModal, setShowModal] = useState(false);
 
+  // example for now
+  const notifications = [
+    { id: 1, inviterName: "Dylan Hopkins", wagerName: "Math 69 Final" },
+    { id: 2, inviterName: "Audrey Zhang", wagerName: "CS61B Project 3" },
+    { id: 3, inviterName: "Big Johnson", wagerName: "Sending 101 HW 2" }
+  ];
+
   const handleNotificationClick = () => {
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
+  };
+
+  const handleViewDetails = (id: number) => {
+    console.log(`Viewing details for notification ID: ${id}`);
   };
 
   return (
@@ -25,7 +36,7 @@ const Sidebar = () => {
             style={{ cursor: "pointer" }}
           >
             <FaBell size={20} />
-            <span className="sidebar-badge">1</span>
+            <span className="sidebar-badge">{notifications.length}</span>
           </div>
           <div className="sidebar-wallet">
             <span className="sidebar-wallet-amount">$0</span>
@@ -42,29 +53,35 @@ const Sidebar = () => {
           <Link href="/history" className="sidebar-link">
             <FaClock size={20} className="sidebar-icon" /> History
           </Link>
-        </div>
 
+
+          <div className="sidebar-footer">
+          <div className="betsmart-logo">
+            <img className= "logoPic"
+              src="https://i.ibb.co/c6tbLXR/betsmartlogo.png"
+              alt="BetSmart Logo"
+              className="logo-image"
+            />
+        </div>
+        {/* <h3 className="sidebar-logo">BetSmart</h3> */}
         <div className="sidebar-logout">
           <Link href="/signup" className="sidebar-link">
             <FaUser size={20} className="sidebar-icon" /> Log Out
           </Link>
         </div>
-        
-        <div className="sidebar-footer">
-          <h3 className="sidebar-logo">BetSmart</h3>
-          <div className="betsmart-logo">
-            <img
-              src="https://i.ibb.co/c6tbLXR/betsmartlogo.png"
-              alt="BetSmart Logo"
-              className="logo-image"
-            />
-          </div>
         </div>
-    
+
+        </div>
+        
+
       </div>
 
-      {/* Notification Modal */}
-      <NotifModal show={showModal} onClose={handleCloseModal} />
+      <NotifModal
+        show={showModal}
+        onClose={handleCloseModal}
+        notifications={notifications}
+        onViewDetails={handleViewDetails} 
+      />
     </>
   );
 };

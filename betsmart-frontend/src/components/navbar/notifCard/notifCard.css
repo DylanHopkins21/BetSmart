@@ -1,0 +1,61 @@
+.notification-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #022B3A;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .notification-text {
+    flex-grow: 1;
+    margin-right: 1rem;
+    font-size: 14px;
+    color: #333;
+    color: white;
+  }
+  
+  .notification-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .view-details-btn {
+    padding: 0.5rem 1rem;
+    background-color: #00A8E8;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .accept-btn,
+  .deny-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .accept-btn {
+    color: green;
+  }
+  .accept-btn:hover {
+    color: green;
+    background-color: #022B3A;
+  }
+  
+  .deny-btn {
+    color: rgb(228, 74, 74);
+  }
+  .deny-btn:hover {
+    color: rgb(228, 74, 74);
+    background-color: #022B3A;
+  }
+  
+  .view-details-btn:hover {
+    background-color: #02709c;
+  }
+  
