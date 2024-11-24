@@ -76,12 +76,11 @@ const Sidebar = () => {
 
       </div>
 
-      {/* Notification Modal */}
       <NotifModal
         show={showModal}
         onClose={handleCloseModal}
-        notifications={notifications} // Pass notifications array
-        onViewDetails={handleViewDetails} // Pass view details handler
+        notifications={notifications}
+        onViewDetails={handleViewDetails} 
       />
     </>
   );
