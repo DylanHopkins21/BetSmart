@@ -53,24 +53,27 @@ const Sidebar = () => {
           <Link href="/history" className="sidebar-link">
             <FaClock size={20} className="sidebar-icon" /> History
           </Link>
-        </div>
 
+
+          <div className="sidebar-footer">
+          <div className="betsmart-logo">
+            <img className= "logoPic"
+              src="https://i.ibb.co/c6tbLXR/betsmartlogo.png"
+              alt="BetSmart Logo"
+              className="logo-image"
+            />
+        </div>
+        {/* <h3 className="sidebar-logo">BetSmart</h3> */}
         <div className="sidebar-logout">
           <Link href="/signup" className="sidebar-link">
             <FaUser size={20} className="sidebar-icon" /> Log Out
           </Link>
         </div>
-        
-        <div className="sidebar-footer">
-          <h3 className="sidebar-logo">BetSmart</h3>
-          <div className="betsmart-logo">
-            <img
-              src="https://i.ibb.co/c6tbLXR/betsmartlogo.png"
-              alt="BetSmart Logo"
-              className="logo-image"
-            />
-          </div>
         </div>
+
+        </div>
+        
+
       </div>
 
       {/* Notification Modal */}
