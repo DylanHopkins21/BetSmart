@@ -7,12 +7,23 @@ import NotifModal from "./notifModal/notifModal";
 const Sidebar = () => {
   const [showModal, setShowModal] = useState(false);
 
+  // example for now
+  const notifications = [
+    { id: 1, inviterName: "Dylan Hopkins", wagerName: "Math 69 Final" },
+    { id: 2, inviterName: "Audrey Zhang", wagerName: "CS61B Project 3" },
+    { id: 3, inviterName: "Big Johnson", wagerName: "Sending 101 HW 2" }
+  ];
+
   const handleNotificationClick = () => {
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
+  };
+
+  const handleViewDetails = (id: number) => {
+    console.log(`Viewing details for notification ID: ${id}`);
   };
 
   return (
@@ -25,7 +36,7 @@ const Sidebar = () => {
             style={{ cursor: "pointer" }}
           >
             <FaBell size={20} />
-            <span className="sidebar-badge">1</span>
+            <span className="sidebar-badge">{notifications.length}</span>
           </div>
           <div className="sidebar-wallet">
             <span className="sidebar-wallet-amount">$0</span>
@@ -60,11 +71,15 @@ const Sidebar = () => {
             />
           </div>
         </div>
-    
       </div>
 
       {/* Notification Modal */}
-      <NotifModal show={showModal} onClose={handleCloseModal} />
+      <NotifModal
+        show={showModal}
+        onClose={handleCloseModal}
+        notifications={notifications} // Pass notifications array
+        onViewDetails={handleViewDetails} // Pass view details handler
+      />
     </>
   );
 };
