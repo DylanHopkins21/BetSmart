@@ -1,0 +1,50 @@
+.wagerComp {
+    background-color: #00171F;
+    width: 75%;
+    height: 20%; 
+    border-radius: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.aboveLine{
+    display: flex;
+    flex-direction: row;
+}
+
+
+.leftSide {
+    display: flex;
+    flex-direction: column;
+    margin-left: 1.5rem;
+    flex: 1;
+    opacity: 0.5;
+
+}
+
+.rightSide{
+    display: flex;
+    justify-content: flex-end;
+
+}
+
+.belowLine{
+    background-color: #022B3A;
+    display: flex;
+    flex-direction: row;
+    margin: 1;
+    padding: 7.5px;
+    justify-content: space-evenly;
+}
+
+.entryFlex{
+
+}
+
+.partsFlex{
+    
+}
+
+.prizeFlex{
+    
+}
