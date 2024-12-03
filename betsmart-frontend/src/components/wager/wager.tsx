@@ -1,55 +1,50 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import './wager.css';
-
-
+import "./wager.css";
+import "./Timeline.css"
+import Timeline from "./Timeline";
 
 interface WagerProps {
-    name: String; 
-    semester: String;
-    image: String;
-    timeLeft: number; //goes down 
+    name: string; 
+    semester: string;
+    image: string;
+    timeLeft: number; 
     entry: number; 
-    partNum: number; //participants number
-
+    partNum: number; 
 }
 
-export default function Wager({ name, semester, image, timeLeft, entry, partNum} : WagerProps){
-    //need to gather the information from the submit 
-
-
-    //do it for a set value 
+export default function Wager({ name, semester, image, timeLeft, entry, partNum }: WagerProps) {
     return (
         <div className='wagerComp'>
             <div className='aboveLine'>
                 <div className='leftSide'>
-                    {name}
-                    {semester}
+                    <div className = 'name'>{name}</div>
+                    <div className = 'sem'>{semester}</div>
                 </div>
-                //rightside
-                <div className = 'rightSide'>
-                    <img>
-                        //just put in the url or smth
-                        //make sur there's an image gradient 
-                    </img>
-                 </div>
+                <div className='rightSide'>
+                        <img className='img' src={image} alt={`${name}'s avatar`} />
+                        {/*add gradient*/}
+                </div>
             </div>
-            //moving time line for line 
-            /*PUT HERE*/
+
+            <div className='timer'>
+                <Timeline duration={timeLeft}/>
+            </div>
 
             <div className='belowLine'>
                 <div className='entryFlex'>
                     {entry}
-                    <p>Entry</p>
+                    <p style ={{opacity: 0.5}} className = 'pstyle'>Entry</p>
                 </div>
-                <div className='partsFlex'>
+                <div className='entryFlex'>
                     {partNum}
-                    <p>Participants</p>
+                    <p style ={{opacity: 0.5}} className = 'pstyle'>Participants</p>
                 </div>
-                <div className='prizeFlex'>
-                    {entry*partNum}
-                    <p>Prize</p>
+                <div className='entryFlex'>
+                    <div>${entry * partNum}</div>
+                    <p style ={{opacity: 0.5}} className = 'pstyle'>Prize</p>
                 </div>
             </div>
         </div>
-)}
+    );
+}
