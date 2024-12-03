@@ -1,0 +1,74 @@
+.history-container {
+  padding: 2rem;
+  background-color: #E1E5F2;
+  color: #fff;
+  height: 200%;
+}
+
+/* Header Section */
+.history-header {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  position: relative; 
+}
+
+.create-section {
+  display: flex;
+  align-items: center;
+}
+
+.title-section {
+  background-color: #00171F; 
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff; 
+  padding: 0.5rem 1rem; 
+  border-radius: 10px;
+  position: absolute; 
+  right: 0; 
+  top: 0; 
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+  z-index: 10;
+}
+
+.create-wager-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #00171F;
+  border: 2px solid #ffffff;
+  border-radius: 40px;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  text-decoration: none; 
+  cursor: pointer;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  transform: scale(1.5);
+  margin-left:  3rem;
+}
+
+.create-wager-button:hover {
+  background-color: #02709c;
+  border-color: #053143;
+}
+
+.create-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-right: 0.5rem;
+  line-height: 1rem;
+}
+
