@@ -11,15 +11,24 @@ interface WagerProps {
     timeLeft: number; 
     entry: number; 
     partNum: number; 
+    win?: boolean; 
 }
 
-export default function Wager({ name, semester, image, timeLeft, entry, partNum }: WagerProps) {
+export default function Wager({ name, semester, image, timeLeft, entry, partNum, win }: WagerProps) {
     return (
         <div className='wagerComp'>
             <div className='aboveLine'>
                 <div className='leftSide'>
                     <div className = 'name'>{name}</div>
-                    <div className = 'sem'>{semester}</div>
+                    <div className = 'sem'>
+                        {semester}
+                        {win !== undefined && (
+                        <div className={`wonOrLost ${win ? 'win' : 'lose'}`}>
+                            {win ? `+$${entry}` : `-$${entry}`}
+                        </div>
+                        )}
+                    </div>
+
                 </div>
                 <div className='rightSide'>
                         <img className='img' src={image} alt={`${name}'s avatar`} />
