@@ -124,7 +124,7 @@ export default function CreateWagerConfigs() {
                 </Link>
             </div>
             <div className='wagerContent'>
-                <div className = 'spacer'></div>
+                <div className='side-space'></div>
                 {/*SELECTIONS*/}
                 <div className='wagerSelects'>
                     {/*CLASS SELECTION*/}
@@ -195,7 +195,7 @@ export default function CreateWagerConfigs() {
                     
                 </div>
 
-                <div className = 'spacer'></div>
+                <div className = 'middle-space'></div>
 
                 {/* UPLOAD IMAGE */}
                 <div className='imageUpload'>
@@ -235,7 +235,7 @@ export default function CreateWagerConfigs() {
                         </div>
                     </div>
                 </div>
-                <div className='spacer'></div>
+                <div className='side-space'></div>
             </div>
         </div>
     )

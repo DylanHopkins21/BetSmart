@@ -6,17 +6,26 @@
     border-radius: 20px;
     margin-right: 5vw;
     margin-left: 5vw;
-    height: 70vh;
+    height: auto;
+    width: 80vw; /* Set width as a percentage of viewport width */
+    max-width: 1000px; /* Prevents it from growing too wide */
+    min-width: 250px; /* Reduced minimum width */
+    box-sizing: border-box;
 }
 
 .wagerContent {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap; /* Allow elements to wrap on smaller screens */
 }
 
-.spacer {
-    flex: 1;
+.middle-space {
+    flex: 2;
+}
+
+.side-space {
+    flex: 0.75;
 }
 
 /* Title Section */
@@ -25,20 +34,22 @@
     justify-content: center;
     align-items: center;
     background-color: #FFFFFF;
-    font-size: x-large;
-    border-radius: 20px;
-    padding: 0;
+    font-size: 1.2rem;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 0.5rem;
     margin-bottom: 15px;
 }
 
 .titleText {
-    flex: 5;
+    flex: 10;
     display: flex;
     align-items: center;
+    font-size: 1.5rem;
 }
 
 .dollarIcon {
-    font-size: 4rem;
+    font-size: 2.5rem;
     flex: 1;
 }
 
@@ -49,18 +60,16 @@
     padding: 0.75rem 1rem;
     margin: 1rem;
     text-decoration: none;
-    background-color: #520404;
-    color: #fff;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.2s ease;
-    flex : 1;
-    max-width: 3rem;
+    color: #000000;
     font-weight: bold;
+    border-radius: 5px;
+    font-size: 1.5vw;
+    transition: background-color 0.2s ease;
+    max-width: 3rem;
 }
 
 .cancel-button:hover {
-    background-color: rgb(123, 48, 48);
+    color: #707070;
 }
 
 /* Selects Section */
@@ -68,42 +77,45 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    margin-top: 10px;
 }
 
 .categoryLabel {
-    font-size: large;
+    font-size: 1.2rem;
     color: white;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     text-decoration: underline;
     flex: 1;
-
 }
 
 .custom-select {
     background-color: white;
     border-radius: 10px;
-    min-width: 15rem;
+    min-width: 8rem; /* Reduced minimum width */
     flex: 1;
+    font-size: 1rem;
 }
-.select-spacer{
+
+.select-spacer {
     background-color: transparent;
-    margin: 15px;
-    flex: 1
+    margin: 10px;
+    flex: 1;
 }
 
 /* Email Section */
 .emailList {
     color: white;
-
+    font-size: 1rem;
 }
 
 /* Image Upload Section */
-
 .upload-text {
     color: white;
     text-decoration: underline;
     margin-bottom: 10px;
+    font-size: 1rem;
 }
+
 .imageUpload {
     flex: 1;
     display: flex;
@@ -111,19 +123,17 @@
 }
 
 .uploadButton {
-    width: 24vw;
+    width: 20vw;
     padding: 10px;
-    font-size: 1.5vh;
+    font-size: 1.2vh;
     border: 1px solid #CCCCCC;
     border-radius: 5px;
 }
 
 .uploaded-image {
-    max-width: 40vw;
-    max-height: 40vh;
+    max-width: 35vw;
+    max-height: 35vh;
 }
-
-
 
 /* Submit Button Section */
 .submitButton {
@@ -146,11 +156,101 @@
     text-decoration: none;
     background-color: #214b5a;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 14px;
     max-width: 10rem;
     transition: background-color 0.2s ease;
     flex: 1;
 }
+
 .submit-button:hover {
     background-color: #02709c;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .createWagerBox {
+        width: 90vw;
+        margin-left: 5vw;
+        margin-right: 5vw;
+    }
+
+    .wagerContent {
+        flex-direction: column;
+    }
+
+    .cancel-button {
+        font-size: 3vw;
+        max-width: none;
+    }
+
+    .titleText {
+        font-size: 1.2rem;
+    }
+
+    .categoryLabel {
+        font-size: 1rem;
+    }
+
+    .custom-select {
+        min-width: 8rem; /* Adjusted for responsiveness */
+    }
+
+    .uploadButton {
+        width: 40vw;
+        font-size: 1.3vh;
+    }
+
+    .uploaded-image {
+        max-width: 90%;
+        max-height: 50vh;
+    }
+
+    .submit-button {
+        font-size: 14px;
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+    .createWagerBox {
+        width: 95vw;
+        margin-left: 2.5vw;
+        margin-right: 2.5vw;
+    }
+
+    .wagerContent {
+        flex-direction: column;
+    }
+
+    .cancel-button {
+        font-size: 4vw;
+        max-width: none;
+    }
+
+    .titleText {
+        font-size: 1.2rem;
+    }
+
+    .categoryLabel {
+        font-size: 1rem;
+    }
+
+    .custom-select {
+        min-width: 6rem; /* Even smaller for mobile */
+    }
+
+    .uploadButton {
+        width: 50vw;
+        font-size: 1.5vh;
+    }
+
+    .uploaded-image {
+        max-width: 80vw;
+        max-height: 50vh;
+    }
+
+    .submit-button {
+        font-size: 14px;
+        max-width: 100%;
+    }
 }
