@@ -35,6 +35,30 @@
     font-size: 1.5em; 
     flex:1; 
     opacity: 0.5; 
+    flex-direction: row;
+}
+
+.wonOrLost {
+    opacity:1;
+    display: flex;
+    flex-direction: flex-end;
+    align-items:center;
+    font-size: 1.0rem;
+    font-weight: medium;
+    padding: 0.5rem;
+    margin-left: 0.5rem;
+    border-radius: 1rem;
+    width: 8%;
+    height: 20%;
+}
+.wonOrLost.win {
+    background-color: #00ff3c;
+    color: #256334;
+}
+
+.wonOrLost.lose {
+    background-color: #ff0015;
+    color: #000000;
 }
 
 .rightSide{
