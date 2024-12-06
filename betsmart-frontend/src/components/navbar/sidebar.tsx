@@ -65,7 +65,7 @@ const Sidebar = () => {
         </div>
         {/* <h3 className="sidebar-logo">BetSmart</h3> */}
         <div className="sidebar-logout">
-          <Link href="/signup" className="sidebar-link">
+          <Link href="/login" className="sidebar-link">
             <FaUser size={20} className="sidebar-icon" /> Log Out
           </Link>
         </div>
