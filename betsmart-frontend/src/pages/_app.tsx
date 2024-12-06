@@ -8,7 +8,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       {isLoggedIn && (
-        <div style={{ flex: "0 0 250px", backgroundColor: "#00171F" }}>
+        <div style={{ flex: "0 0 15%" }}>
           <Sidebar />
         </div>
       )}
