@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import "./dashboard.css";
+import Wager from "@/components/wager/wager";
+import monkeyImage from './images/monkeyimage.jpg'; 
 
 const Dashboard = () => {
   return (
@@ -20,9 +22,19 @@ const Dashboard = () => {
       {/* audrey needs to replcae the placeholders with teh actual cards */}
       <div className="wager-section">
         <div className="wager-list">
-          <div className="wager-card-placeholder">CS70 Midterm</div>
+          <Wager
+              name="CS61B Midterm 2"
+              semester="Fall 2021"
+              image="/images/longimage.jpg"
+              entry={5}
+              partNum={7}
+              timeLeft={60}
+          />
+
           <div className="wager-card-placeholder">CS162 Project 2</div>
           <div className="wager-card-placeholder">Poop DeCal HW 1</div>
+          /*place here */
+
         </div>
       </div>
     </div>

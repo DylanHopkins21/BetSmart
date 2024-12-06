@@ -77,13 +77,14 @@
     margin-top: 5rem;
     display: flex;
     justify-content: flex-end; 
+    width: 100%;
   }
   
   .wager-list {
     display: flex; 
     flex-direction: column; 
     gap: 2rem; 
-    width: 70%; 
+    width: 90%; 
   }
   
   /* Wager Cards */
