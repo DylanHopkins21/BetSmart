@@ -331,6 +331,7 @@ def create_wager():
 
     Request JSON:
     {
+        "creatorsEmail": "email"
         "pendingParticipants": ["email1", "email2"],
         "entryAmount": 10,
         "courseId": "course_id",
@@ -348,13 +349,14 @@ def create_wager():
     - Error: 400 for invalid input or insufficient balance, 500 for server errors.
     """
     data = request.json
+    creator_email = data.get('creatorEmail')  # Fetch the creator's email
     pending_participants = data.get('pendingParticipants', [])
     entry_amount = data.get('entryAmount')
     course_id = data.get('courseId')
     assignment_id = data.get('assignmentId')
 
-    if not entry_amount or not course_id or not assignment_id:
-        return jsonify({"error": "Entry amount, courseId, and assignmentId are required"}), 400
+    if not entry_amount or not course_id or not assignment_id or not creator_email:
+        return jsonify({"error": "Entry amount, courseId, assignmentId, and creatorEmail are required"}), 400
 
     try:
         users = list(users_collection.find({"email": {"$in": pending_participants}}))
@@ -373,6 +375,7 @@ def create_wager():
         )
 
         wager_data = {
+            "creatorEmail": creator_email,  
             "class": data.get('class'),
             "assignment": data.get('assignment'),
             "courseId": course_id,
@@ -531,6 +534,62 @@ def test_expire_wager():
         "winnerEmail": winner_email,
         "totalWinnings": total_winnings
     }), 200
+
+
+
+@app.route('/getActiveWagers', methods=['GET'])
+def get_active_wagers():
+    """
+    Retrieve all active wagers for a specific user.
+
+    - Validate the provided email.
+    - Fetch the user's active wagers from the database.
+    - Return the wager details, including creator email, participants, and wager info.
+
+    Request Parameters:
+    - email: User's email.
+
+    Response:
+    - Success: 200 with a list of active wagers.
+    - Error: 400 for invalid input, 404 for missing user, or 500 for server error.
+    """
+    email = request.args.get('email')
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    try:
+        user = users_collection.find_one({"email": email})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        active_wager_ids = user.get('activeWagers', [])
+        active_wagers = list(wagers_collection.find({"_id": {"$in": active_wager_ids}, "active": True}))
+
+        active_wagers_response = []
+        for wager in active_wagers:
+            active_wagers_response.append({
+                "wagerId": str(wager["_id"]),
+                "creatorEmail": wager.get("creatorEmail", ""),
+                "class": wager.get("class", ""),
+                "assignment": wager.get("assignment", ""),
+                "courseId": wager.get("courseId", ""),
+                "assignmentId": wager.get("assignmentId", ""),
+                "semester": wager.get("semester", ""),
+                "entryAmount": wager.get("entryAmount", 0),
+                "prize": wager.get("prize", 0),
+                "imageId": wager.get("imageId", ""),
+                "activeParticipants": wager.get("activeParticipants", []),
+                "pendingParticipants": wager.get("pendingParticipants", []),
+                "endTime": wager.get("endTime", ""),
+                "active": wager.get("active", True),
+                "winner": wager.get("winner", "")
+            })
+
+        return jsonify({"activeWagers": active_wagers_response}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 
