@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+body {
+  font-family: 'Montserrat';
+}
+  .darkBG {
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+  }
+  
+  .centered {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    transform: translate(-50%, -50%);
+  }
+
+  .leftAlign {
+    position: fixed;
+    top: 0%;
+    left: 0%;
+  }
+  
+  .modal {
+    width: 100%;
+    height: 100%;
+    background: #00171f;
+    color: white;
+    z-index: 10;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+  }
+  
+  .modalHeader {
+    overflow: hidden;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+  }
+  
+  .headingh1 {
+    margin: 0;
+    padding: 10px;
+    color: #fff;
+    font-weight: 500;
+    font-size: 32px;
+    text-align: left;
+    padding-bottom: 0;
+    font-family: 'Montserrat';
+  }
+
+  .headingh3 {
+    margin: 0;
+    padding: 10px;
+    color: #667e88;
+    font-weight: 500;
+    font-size: 24px;
+    text-align: left;
+    padding-top: 0;
+  }
+  .timeBar{
+    padding: 10px;
+    text-align: right;
+    margin-right: 20px;
+    margin-top: 198px;
+    margin-bottom: 10px;
+    height: 20px;
+  }
+
+  .progressBar {
+    background-color:#646c73;
+    border-top-left-radius: 13px;
+    border-top-right-radius: 13px;
+    border-bottom-right-radius: 13px;
+    padding: 3px;
+    width: calc(100% - 5px);
+    margin-top: 0px;
+  }
+  
+  .progressBar>div {
+    background-color:#d6bd45;
+    width: 40%;
+    /* Adjust with JavaScript */
+    height: 20px;
+    border-top-left-radius: 13px;
+    border-top-right-radius: 13px;
+    border-bottom-right-radius: 13px;
+    
+  }
+  .bottomBar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #012c39;
+
+  }
+  .modalimage {
+    background-image: url(./WagerModalPhoto.png);
+    width:50%;
+    height: 30%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-size: cover;
+  }
+  .wagerAmount, .wagerNumber{
+    padding: 10px;
+    text-align: center;
+    flex-basis: 25%;
+  }
+.wagerPrize {
+    padding: 10px;
+    text-align: center;
+    flex-basis: 25%;
+  }
+  .wagerAmount p, .wagerNumber p, .wagerPrize p {
+    font-size: 14px;
+    color: #fff;
+    margin-bottom:5px;
+  }
+ .label {
+  margin-top: 0;
+    font-size: 14px;
+    color: #667e88;
+  }
+  
+
+  .modalActions {
+    margin-bottom: 10px;
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+  }
+  
+  .actionsContainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .closeBtn {
+    cursor: pointer;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4;
+    border: none;
+    font-size: 18px;
+    color: #fff;
+    background: #2c3e50;
+    transition: all 0.25s ease;
+    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+    position: absolute;
+    right: 0;
+    top: 0;
+    align-self: flex-end;
+    margin-top: -7px;
+    margin-right: -7px;
+  }
+  
+  .closeBtn:hover {
+    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+    transform: translate(-4px, 4px);
+  }
+  
+  .deleteBtn {
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    border: none;
+    color: #000;
+    background: #00ec1a;
+    transition: all 0.25s ease;
+  }
+  
+  .deleteBtn:hover {
+    box-shadow: 0 10px 20px -10px rgba(255, 62, 78, 0.6);
+    transform: translateY(-5px);
+  
+  }
+  
+  .cancelBtn {
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-left: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    border: none;
+    background: #fe0300;
+    color: #000;
+    transition: all 0.25s ease;
+  }
+  
+  .cancelBtn:hover {
+    box-shadow: none;
+    transform: none;
+
+  }
+  
