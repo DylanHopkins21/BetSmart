@@ -589,6 +589,58 @@ def get_active_wagers():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/getPendingInvitations', methods=['GET'])
+def get_pending_invitations():
+    """
+    Retrieve all pending wager invitations for a specific user.
+
+    - Validate the provided email.
+    - Fetch the user's pending invitations from the database.
+    - Return the wager details for all pending invitations.
+
+    Request Parameters:
+    - email: User's email.
+
+    Response:
+    - Success: 200 with a list of pending wagers.
+    - Error: 400 for invalid input, 404 for missing user, or 500 for server error.
+    """
+    email = request.args.get('email')
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    try:
+        user = users_collection.find_one({"email": email})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        pending_wager_ids = user.get('pendingInvitations', [])
+        pending_wagers = list(wagers_collection.find({"_id": {"$in": pending_wager_ids}, "active": True}))
+
+        pending_wagers_response = []
+        for wager in pending_wagers:
+            pending_wagers_response.append({
+                "wagerId": str(wager["_id"]),
+                "creatorEmail": wager.get("creatorEmail", ""),
+                "class": wager.get("class", ""),
+                "assignment": wager.get("assignment", ""),
+                "courseId": wager.get("courseId", ""),
+                "assignmentId": wager.get("assignmentId", ""),
+                "semester": wager.get("semester", ""),
+                "entryAmount": wager.get("entryAmount", 0),
+                "prize": wager.get("prize", 0),
+                "imageId": wager.get("imageId", ""),
+                "endTime": wager.get("endTime", ""),
+                "active": wager.get("active", True),
+            })
+
+        return jsonify({"pendingInvitations": pending_wagers_response}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 
