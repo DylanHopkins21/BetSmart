@@ -1,9 +1,13 @@
-import bcrypt
+from cryptography.fernet import Fernet
 from flask import Flask, request, jsonify
 from gradescopeapi.classes.connection import GSConnection
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -13,17 +17,22 @@ db = client.betsmartAuth
 users_collection = db.users
 wagers_collection = db.wagers
 
+encryption_key = os.getenv("FERNET_KEY")
+cipher_suite = Fernet(encryption_key.encode('utf-8'))
+
+def encrypt_password(password):
+    return cipher_suite.encrypt(password.encode('utf-8')).decode('utf-8')
+
+def decrypt_password(encrypted_password):
+    return cipher_suite.decrypt(encrypted_password.encode('utf-8')).decode('utf-8')
+
+# Gradescope Login
 def gradescope_login(email, password):
     connection = GSConnection()
     connection.login(email, password)
     return connection
 
-def hash_password(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-def verify_password(password, hashed_password):
-    return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
-
+# Routes
 @app.route('/gradescopeAuth', methods=['POST'])
 def gradescope_auth():
     data = request.json
@@ -37,15 +46,16 @@ def gradescope_auth():
     try:
         user = users_collection.find_one({"email": email})
         if user:
-            if not verify_password(password, user["password"]):
+            stored_password = decrypt_password(user["password"])
+            if password != stored_password:
                 return jsonify({"error": "Invalid password"}), 401
             return jsonify({"message": "Logged in successfully!"}), 200
 
-        hashed_password = hash_password(password)
+        encrypted_password = encrypt_password(password)
         users_collection.insert_one({
             "email": email,
             "name": name,
-            "password": hashed_password,
+            "password": encrypted_password,
             "activeWagers": [],
             "pastWagers": [],
             "balance": 0,
@@ -55,6 +65,7 @@ def gradescope_auth():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 @app.route('/getActiveWagers', methods=['GET'])
 def get_active_wagers():
     email = request.args.get('email')
@@ -106,7 +117,6 @@ def accept_invite():
 
     return jsonify({"message": "Invitation accepted successfully"}), 200
 
-
 @app.route('/rejectInvite', methods=['POST'])
 def reject_invite():
     data = request.json
@@ -144,11 +154,16 @@ def reject_invite():
 
     return jsonify({"message": "Invitation rejected successfully"}), 200
 
-
 @app.route('/expireWager', methods=['POST'])
 def expire_wager():
     data = request.json
     wager_id = data.get('wagerId')
+
+    try:
+        wager_id = ObjectId(wager_id)
+    except:
+        return jsonify({"error": "Invalid wagerId format"}), 400
+
     wager = wagers_collection.find_one({"_id": wager_id})
 
     if not wager or not wager['active']:
@@ -159,13 +174,12 @@ def expire_wager():
     for participant_id in participants:
         user = users_collection.find_one({"_id": participant_id})
         if user:
-      
-            connection = gradescope_login(user['email'], user['password'])
+            decrypted_password = decrypt_password(user['password'])
+            connection = gradescope_login(user['email'], decrypted_password)
             assignments = connection.account.get_assignments(wager['class'])
             for assignment in assignments:
                 if assignment.name == wager['assignment']:
                     grades.append({"user_id": participant_id, "grade": assignment.grade})
-
 
     if grades:
         winner = max(grades, key=lambda x: x['grade'])
@@ -213,7 +227,6 @@ def create_wager():
     )
 
     return jsonify({"message": "Wager created successfully", "wagerId": str(wager_id)}), 200
-
 
 @app.route('/getPastWagers', methods=['GET'])
 def get_past_wagers():
