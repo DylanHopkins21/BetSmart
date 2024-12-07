@@ -1,30 +1,184 @@
-from flask import Flask
+from flask import Flask, request, jsonify
+from gradescopeapi.classes.connection import GSConnection
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from datetime import datetime
+
 app = Flask(__name__)
 
-#login
-@app.route('/gradescopeAuth')
+uri = "mongodb+srv://mohammedamin:Wu0p2cOt41evliql@betsmart.l7eyf.mongodb.net/?retryWrites=true&tls=true&tlsAllowInvalidCertificates=true&w=majority&appName=BetSmart"
+client = MongoClient(uri, server_api=ServerApi('1'))
 
-@app.route('/getActiveWagers')
-def getActiveWagers():
-    return {"name" : "audrey"}
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
 
-@app.route('/getNotifs')
+db = client.betsmartAuth
+users_collection = db.users
+wagers_collection = db.wagers
 
-@app.route('/expireWager')
-#move when some negative time 
+def gradescope_login(email, password):
+    connection = GSConnection()
+    connection.login(email, password)
+    return connection
 
-@app.route('/getPastWagers')
+@app.route('/gradescopeAuth', methods=['POST'])
+def gradescope_auth():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+    try:
+        connection = gradescope_login(email, password)
+        user = users_collection.find_one({"email": email})
+        if not user:
+            users_collection.insert_one({
+                "email": email,
+                "name": data.get('name', ''),
+                "password": password, 
+                "activeWagers": [],
+                "pastWagers": [],
+                "balance": 0,
+                "pendingInvitations": []
+            })
+        return jsonify({"message": "Logged in successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
-@app.route('/getTotalEarnings')
-#summation of all entries in past wagers 
+@app.route('/getActiveWagers', methods=['GET'])
+def get_active_wagers():
+    email = request.args.get('email')
+    user = users_collection.find_one({"email": email})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    active_wagers = wagers_collection.find({"_id": {"$in": user['activeWagers']}})
+    return jsonify({"activeWagers": list(active_wagers)}), 200
+
+@app.route('/acceptInvite', methods=['POST'])
+def accept_invite():
+    data = request.json
+    email = data.get('email')
+    wager_id = data.get('wagerId')
+
+    user = users_collection.find_one({"email": email})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    if wager_id in user['pendingInvitations']:
+    
+        users_collection.update_one(
+            {"email": email},
+            {"$pull": {"pendingInvitations": wager_id}, "$push": {"activeWagers": wager_id}}
+        )
+ 
+        wagers_collection.update_one(
+            {"_id": wager_id},
+            {"$push": {"activeParticipants": user['_id']}}
+        )
+        return jsonify({"message": "Invitation accepted"}), 200
+    else:
+        return jsonify({"error": "Invitation not found"}), 400
+
+@app.route('/rejectInvite', methods=['POST'])
+def reject_invite():
+    data = request.json
+    email = data.get('email')
+    wager_id = data.get('wagerId')
+
+    user = users_collection.find_one({"email": email})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    if wager_id in user['pendingInvitations']:
+
+        users_collection.update_one(
+            {"email": email},
+            {"$pull": {"pendingInvitations": wager_id}}
+        )
+        return jsonify({"message": "Invitation rejected"}), 200
+    else:
+        return jsonify({"error": "Invitation not found"}), 400
+
+@app.route('/expireWager', methods=['POST'])
+def expire_wager():
+    data = request.json
+    wager_id = data.get('wagerId')
+    wager = wagers_collection.find_one({"_id": wager_id})
+
+    if not wager or not wager['active']:
+        return jsonify({"error": "Wager not found or already expired"}), 404
+
+    participants = wager['activeParticipants']
+    grades = []
+    for participant_id in participants:
+        user = users_collection.find_one({"_id": participant_id})
+        if user:
+      
+            connection = gradescope_login(user['email'], user['password'])
+            assignments = connection.account.get_assignments(wager['class'])
+            for assignment in assignments:
+                if assignment.name == wager['assignment']:
+                    grades.append({"user_id": participant_id, "grade": assignment.grade})
 
 
-@app.route('/acceptInvite')
+    if grades:
+        winner = max(grades, key=lambda x: x['grade'])
+        users_collection.update_one(
+            {"_id": winner['user_id']},
+            {
+                "$inc": {"balance": wager['prize']},
+                "$push": {"pastWagers": wager_id}
+            }
+        )
 
-@app.route('/rejectInvite')
+    wagers_collection.update_one({"_id": wager_id}, {"$set": {"active": False}})
+    return jsonify({"message": "Wager expired successfully"}), 200
 
-@app.route('/createWager')
-#move created to add to active wagers 
+@app.route('/createWager', methods=['POST'])
+def create_wager():
+    data = request.json
+    wager_data = {
+        "class": data.get('class'),
+        "assignment": data.get('assignment'),
+        "semester": data.get('semester'),
+        "entryAmount": data.get('entryAmount'),
+        "prize": data.get('prize'),
+        "imageId": data.get('imageId'),
+        "activeParticipants": [],
+        "pendingParticipants": data.get('pendingParticipants', []),
+        "endTime": data.get('endTime'),
+        "active": True,
+        "winner": ""
+    }
+    wager_id = wagers_collection.insert_one(wager_data).inserted_id
+
+
+    users_collection.update_many(
+        {"_id": {"$in": wager_data['pendingParticipants']}},
+        {"$push": {"pendingInvitations": wager_id}}
+    )
+    return jsonify({"message": "Wager created successfully", "wagerId": str(wager_id)}), 200
+
+@app.route('/getPastWagers', methods=['GET'])
+def get_past_wagers():
+    email = request.args.get('email')
+    user = users_collection.find_one({"email": email})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    past_wagers = wagers_collection.find({"_id": {"$in": user['pastWagers']}})
+    return jsonify({"pastWagers": list(past_wagers)}), 200
+
+@app.route('/getTotalEarnings', methods=['GET'])
+def get_total_earnings():
+    email = request.args.get('email')
+    user = users_collection.find_one({"email": email})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    total_earnings = sum(wager['prize'] for wager in wagers_collection.find({"_id": {"$in": user['pastWagers']}}))
+    return jsonify({"totalEarnings": total_earnings}), 200
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
