@@ -3,7 +3,7 @@
     flex-direction: column;
     height: 100%;
     padding: 16px;
-    background-color: #00455ca6;
+    background: linear-gradient(180deg, #282c2c, #1b3c48);
 }
 
 .page-title {

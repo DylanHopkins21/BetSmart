@@ -3,8 +3,10 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import React, { useState } from 'react';
 import './CreateWagerConfigs.css';
 import { FaDollarSign } from "react-icons/fa";
-import Link from "next/link";
 import EmailTag from '../EmailTag/EmailTag';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { RxCross2 } from "react-icons/rx";
 /*
     props.classes : List of String of class names
     props.assignments : Dictionary w/ String class names as keys and List of String assignment names as values
@@ -24,6 +26,7 @@ export default function CreateWagerConfigs() {
     const [image, setImage] = useState("");
     const [emailList, setEmailList] = useState<string[]>([]);
     const [emailInput, setEmailInput] = useState("");
+    const router = useRouter();
 
     const VisuallyHiddenInput = styled('input')({
         clip: 'rect(0 0 0 0)',
@@ -97,12 +100,18 @@ export default function CreateWagerConfigs() {
                 const newEmailList = [...emailList];
                 newEmailList.splice(ind, 1);
                 setEmailList(newEmailList);
-                console.log('Successfully removed' + emailToRemove)
+                console.log('Successfully removed ' + emailToRemove)
             }
       }
 
 
-
+      const handleSubmit = () => {
+        if (currentClass && currentAssignment && wagerAmount !== 0 && emailList.length > 0) {
+          router.push('/dashboard'); 
+        } else {
+          alert('All required fields must be filled.');
+        }
+      };
 
     return (
         <div className='createWagerBox'>
@@ -110,15 +119,18 @@ export default function CreateWagerConfigs() {
             <div className='title'>
                 <FaDollarSign className='dollarIcon'/> 
                 <h1 className='titleText'> NEW WAGER </h1>
+                <Link href='dashboard' className='cancel-button'>
+                    <RxCross2/>
+                </Link>
             </div>
             <div className='wagerContent'>
                 <div className = 'spacer'></div>
                 {/*SELECTIONS*/}
                 <div className='wagerSelects'>
                     {/*CLASS SELECTION*/}
-                    <h3 className="categoryLabel">Classes</h3>
+                    <h3 className="categoryLabel">Classes:</h3>
                     <FormControl variant="filled" sx={{ m: 1, minWidth: 160}} className='custom-select'>
-                        <InputLabel id="class-select-label" className='custom-select'>Select Class</InputLabel>
+                        <InputLabel id="class-select-label">Select Class</InputLabel>
                         <Select
                         labelId="class-select-label"
                         value={currentClass}
@@ -133,11 +145,11 @@ export default function CreateWagerConfigs() {
                         ))}
                         </Select>
                     </FormControl>
-                    
+                    <div className="select-spacer"></div>
                     {/*ASSIGNMENT SELECTION*/}
-                    <h3 className="categoryLabel">Assignment</h3>
+                    <h3 className="categoryLabel">Assignment:</h3>
                     <FormControl variant="filled" sx={{ m: 1, minWidth: 160}} className='custom-select'>
-                        <InputLabel id="assignment-select-label" className='custom-select'>Select Assignment</InputLabel>
+                        <InputLabel id="assignment-select-label">Select Assignment</InputLabel>
                         <Select
                         labelId="assignment-select-label"
                         value={currentAssignment}
@@ -152,17 +164,18 @@ export default function CreateWagerConfigs() {
                         ))}
                         </Select>
                     </FormControl>
-                    
+                    <div className="select-spacer"></div>
                     {/*SET WAGER AMOUNT*/}
-                    <h3 className="categoryLabel">Wager</h3>
+                    <h3 className="categoryLabel">Wager:</h3>
                     <TextField
                         className='custom-select'
                         label="Enter Wager Amount ($)"
                         variant="filled"
                         value={wagerAmount}
                         onChange={handleWagerChange}/>
-                    <h3 className="categoryLabel">Invites</h3>
 
+                    <div className="select-spacer"></div>
+                    <h3 className="categoryLabel">Invites:</h3>
                     {/*ENTER EMAIL INVITES*/}
                     <TextField 
                         label='Enter email' 
@@ -186,8 +199,7 @@ export default function CreateWagerConfigs() {
 
                 {/* UPLOAD IMAGE */}
                 <div className='imageUpload'>
-                    <h3 className="categoryLabel">Upload Image</h3>
-                    
+                        <h3 className='upload-text'>Upload Image</h3>
                     {/* Upload Button*/}
                     <Button
                         component="label"
@@ -211,16 +223,15 @@ export default function CreateWagerConfigs() {
                     {/* SUBMIT BUTTON*/}
                     <div className='submitButton'>
                         <div className='buttonAligner'>
-                        {/* Ensure all required fields are filled*/}
-                        {currentClass && currentAssignment && wagerAmount == 0 && emailList.length > 0 ? (
-                            <Link href="/dashboard" className="submit-button">
-                                SUBMIT
-                            </Link>
-                        ) : (
-                            <button onClick={() => alert('All required fields must be filled.')} className="submit-button">
-                                SUBMIT
-                            </button>
-                        )}
+                            <div className='submit-button'>
+                                <Button variant='text' onClick={handleSubmit} 
+                                sx={{color: 'white', 
+                                fontFamily: 'inherit', fontSize: 'large', 
+                                fontWeight: 'bold'
+                                }}>
+                                    SUBMIT
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
