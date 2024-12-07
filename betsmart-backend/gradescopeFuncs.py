@@ -16,7 +16,7 @@ for role, role_courses in courses.items():
     print(f"\n{role.capitalize()} Courses:")
     for course_id, course in role_courses.items():
         print(f"Course ID: {course_id}, Course Name: {course.name}")
-        if int(course_id) == 719091:
+        if int(course_id) == 841645:
             course_name = course.name
 
 if course_name:
@@ -24,12 +24,12 @@ if course_name:
 else:
     print("\nAssignments for Course ID 719091 (Course Name not found)")
 
-course_id = 719091  
+course_id = 841645  
 assignments = connection.account.get_assignments(course_id)
 
 # Print assignments
 for assignment in assignments:
-    print(f"Assignment: {assignment.name}")
+    print(f"Assignment: {assignment.name}, ID: {assignment.assignment_id}")
     print(f"Grade: {assignment.grade}/{assignment.max_grade}")
     print(f"Status: {assignment.submissions_status}")
     print("----------")
