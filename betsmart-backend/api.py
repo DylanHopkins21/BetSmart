@@ -642,6 +642,94 @@ def get_pending_invitations():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/getCourses', methods=['GET'])
+def get_courses():
+    """
+    Retrieve the list of courses available to a user.
+
+    - Validate the provided email.
+    - Fetch courses for the user from Gradescope.
+
+    Request Parameters:
+    - email: User's email.
+
+    Response:
+    - Success: 200 with a list of courses and their IDs.
+    - Error: 400 for invalid input, 404 for missing user, or 500 for server error.
+    """
+    email = request.args.get('email')
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    try:
+        user = users_collection.find_one({"email": email})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        decrypted_password = decrypt_password(user['password'])
+        connection = gradescope_login(email, decrypted_password)
+        courses = connection.account.get_courses()
+
+        course_data = []
+        for role, role_courses in courses.items():
+            for course_id, course in role_courses.items():
+                course_data.append({
+                    "courseId": course_id,
+                    "courseName": course.name
+                })
+
+        return jsonify({"courses": course_data}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/getAssignments', methods=['GET'])
+def get_assignments():
+    """
+    Retrieve the list of assignments for a specific course.
+
+    - Validate the provided course ID and email.
+    - Fetch assignments for the specified course.
+
+    Request Parameters:
+    - email: User's email.
+    - courseId: The ID of the course for which assignments are fetched.
+
+    Response:
+    - Success: 200 with a list of assignment names and IDs.
+    - Error: 400 for invalid input, 404 for missing user or course, or 500 for server error.
+    """
+    email = request.args.get('email')
+    course_id = request.args.get('courseId')
+
+    if not email or not course_id:
+        return jsonify({"error": "Email and courseId are required"}), 400
+
+    try:
+        user = users_collection.find_one({"email": email})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        decrypted_password = decrypt_password(user['password'])
+        connection = gradescope_login(email, decrypted_password)
+        assignments = connection.account.get_assignments(int(course_id))
+
+        assignment_data = []
+        for assignment in assignments:
+            assignment_data.append({
+                "assignmentId": assignment.assignment_id,
+                "assignmentName": assignment.name,
+                "grade": assignment.grade,
+                "maxGrade": assignment.max_grade,
+                "status": assignment.submissions_status
+            })
+
+        return jsonify({"assignments": assignment_data}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 
