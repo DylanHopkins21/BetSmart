@@ -1,0 +1,5 @@
+Flask==2.3.2 
+cryptography==41.0.3 
+pymongo[srv]==4.3.3 
+python-dotenv==1.0.0 
+gradescopeapi==0.1.0
