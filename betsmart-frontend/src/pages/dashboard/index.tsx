@@ -2,9 +2,16 @@ import React from "react";
 import Link from "next/link";
 import "./dashboard.css";
 import Wager from "@/components/wager/wager";
-import monkeyImage from './images/monkeyimage.jpg'; 
+import { useUser } from "@/contexts/UserContext";
 
 const Dashboard = () => {
+  const { user } = useUser();  // Access the user context
+
+  // Now you can access user.email and user.password
+  const email = user?.email;
+  const password = user?.password;
+
+  console.log(email + " " + password + " " + user);
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -33,7 +40,6 @@ const Dashboard = () => {
 
           <div className="wager-card-placeholder">CS162 Project 2</div>
           <div className="wager-card-placeholder">Poop DeCal HW 1</div>
-          /*place here */
 
         </div>
       </div>
