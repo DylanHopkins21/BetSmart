@@ -1,19 +1,29 @@
 from gradescopeapi.classes.connection import GSConnection
+import os
+from dotenv import load_dotenv
 
-# Create connection and login
+load_dotenv()
+password = os.getenv("PASSWORD")
 connection = GSConnection()
-connection.login("mohammedamin@berkeley.edu", "Coolestprohor1723!!!")
-
-# Fetch all courses
+connection.login("mohammedamin@berkeley.edu", password)
 courses = connection.account.get_courses()
-for course in courses["student"]:
-    print(course)
 
-# Get all assignments for a specific course
-course_id = 719091  # Replace with your course ID
+print("Courses:")
+course_name = None 
+for role, role_courses in courses.items():
+    print(f"\n{role.capitalize()} Courses:")
+    for course_id, course in role_courses.items():
+        print(f"Course ID: {course_id}, Course Name: {course.name}")
+        if course_id == 719091: 
+            course_name = course.name
+if course_name:
+    print(f"\nAssignments for Course: {course_name}")
+else:
+    print("\nAssignments for Course ID 719091 (Course Name not found)")
+
+course_id = 719091 
 assignments = connection.account.get_assignments(course_id)
 
-# Print grade details for each assignment
 for assignment in assignments:
     print(f"Assignment: {assignment.name}")
     print(f"Grade: {assignment.grade}/{assignment.max_grade}")
