@@ -7,8 +7,7 @@ from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
-# MongoDB Connection
-uri = "mongodb+srv://<username>:<password>@betsmart.l7eyf.mongodb.net/?retryWrites=true&w=majority"
+uri = "mongodb+srv://mohammedamin:Wu0p2cOt41evliql@betsmart.l7eyf.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.betsmartAuth
 users_collection = db.users
@@ -71,24 +70,42 @@ def accept_invite():
     email = data.get('email')
     wager_id = data.get('wagerId')
 
+    if not email or not wager_id:
+        return jsonify({"error": "Email and wagerId are required"}), 400
+    try:
+        wager_id = ObjectId(wager_id)
+    except:
+        return jsonify({"error": "Invalid wagerId format"}), 400
+
     user = users_collection.find_one({"email": email})
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if wager_id in user['pendingInvitations']:
+    wager = wagers_collection.find_one({"_id": wager_id, "active": True})
+    if not wager:
+        return jsonify({"error": "Wager not found or is no longer active"}), 404
+
+    if wager_id not in user.get('pendingInvitations', []):
+        return jsonify({"error": "Wager not found in user's pending invitations"}), 400
     
-        users_collection.update_one(
-            {"email": email},
-            {"$pull": {"pendingInvitations": wager_id}, "$push": {"activeWagers": wager_id}}
-        )
- 
-        wagers_collection.update_one(
-            {"_id": wager_id},
-            {"$push": {"activeParticipants": user['_id']}}
-        )
-        return jsonify({"message": "Invitation accepted"}), 200
-    else:
-        return jsonify({"error": "Invitation not found"}), 400
+    users_collection.update_one(
+        {"email": email},
+        {
+            "$pull": {"pendingInvitations": wager_id},
+            "$push": {"activeWagers": wager_id}
+        }
+    )
+
+    wagers_collection.update_one(
+        {"_id": wager_id},
+        {
+            "$push": {"activeParticipants": user["_id"]},
+            "$pull": {"pendingParticipants": email}
+        }
+    )
+
+    return jsonify({"message": "Invitation accepted successfully"}), 200
+
 
 @app.route('/rejectInvite', methods=['POST'])
 def reject_invite():
@@ -96,19 +113,37 @@ def reject_invite():
     email = data.get('email')
     wager_id = data.get('wagerId')
 
+    if not email or not wager_id:
+        return jsonify({"error": "Email and wagerId are required"}), 400
+
+    try:
+        wager_id = ObjectId(wager_id)
+    except:
+        return jsonify({"error": "Invalid wagerId format"}), 400
+
     user = users_collection.find_one({"email": email})
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if wager_id in user['pendingInvitations']:
+    wager = wagers_collection.find_one({"_id": wager_id, "active": True})
+    if not wager:
+        return jsonify({"error": "Wager not found or is no longer active"}), 404
 
-        users_collection.update_one(
-            {"email": email},
-            {"$pull": {"pendingInvitations": wager_id}}
-        )
-        return jsonify({"message": "Invitation rejected"}), 200
-    else:
-        return jsonify({"error": "Invitation not found"}), 400
+    if wager_id not in user.get('pendingInvitations', []):
+        return jsonify({"error": "Wager not found in user's pending invitations"}), 400
+    
+    users_collection.update_one(
+        {"email": email},
+        {"$pull": {"pendingInvitations": wager_id}}
+    )
+
+    wagers_collection.update_one(
+        {"_id": wager_id},
+        {"$pull": {"pendingParticipants": email}}
+    )
+
+    return jsonify({"message": "Invitation rejected successfully"}), 200
+
 
 @app.route('/expireWager', methods=['POST'])
 def expire_wager():
@@ -148,6 +183,14 @@ def expire_wager():
 @app.route('/createWager', methods=['POST'])
 def create_wager():
     data = request.json
+    pending_participants = data.get('pendingParticipants', [])
+
+    users = users_collection.find({"email": {"$in": pending_participants}})
+    user_emails = [user['email'] for user in users]
+
+    if not user_emails:
+        return jsonify({"error": "No valid participants found in the database"}), 400
+
     wager_data = {
         "class": data.get('class'),
         "assignment": data.get('assignment'),
@@ -156,19 +199,21 @@ def create_wager():
         "prize": data.get('prize'),
         "imageId": data.get('imageId'),
         "activeParticipants": [],
-        "pendingParticipants": data.get('pendingParticipants', []),
+        "pendingParticipants": user_emails,
         "endTime": data.get('endTime'),
         "active": True,
         "winner": ""
     }
+
     wager_id = wagers_collection.insert_one(wager_data).inserted_id
 
-
     users_collection.update_many(
-        {"_id": {"$in": wager_data['pendingParticipants']}},
+        {"email": {"$in": user_emails}},
         {"$push": {"pendingInvitations": wager_id}}
     )
+
     return jsonify({"message": "Wager created successfully", "wagerId": str(wager_id)}), 200
+
 
 @app.route('/getPastWagers', methods=['GET'])
 def get_past_wagers():
