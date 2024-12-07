@@ -11,7 +11,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-uri = "mongodb+srv://mohammedamin:Wu0p2cOt41evliql@betsmart.l7eyf.mongodb.net/?retryWrites=true&w=majority"
+uri = os.getenv("URI")
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.betsmartAuth
 users_collection = db.users
