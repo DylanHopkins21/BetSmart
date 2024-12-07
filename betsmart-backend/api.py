@@ -1,20 +1,15 @@
+import bcrypt
 from flask import Flask, request, jsonify
 from gradescopeapi.classes.connection import GSConnection
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from datetime import datetime
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
-uri = "mongodb+srv://mohammedamin:Wu0p2cOt41evliql@betsmart.l7eyf.mongodb.net/?retryWrites=true&tls=true&tlsAllowInvalidCertificates=true&w=majority&appName=BetSmart"
+# MongoDB Connection
+uri = "mongodb+srv://<username>:<password>@betsmart.l7eyf.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(uri, server_api=ServerApi('1'))
-
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
-
 db = client.betsmartAuth
 users_collection = db.users
 wagers_collection = db.wagers
@@ -24,28 +19,43 @@ def gradescope_login(email, password):
     connection.login(email, password)
     return connection
 
+def hash_password(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def verify_password(password, hashed_password):
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+
 @app.route('/gradescopeAuth', methods=['POST'])
 def gradescope_auth():
     data = request.json
     email = data.get('email')
     password = data.get('password')
-    try:
-        connection = gradescope_login(email, password)
-        user = users_collection.find_one({"email": email})
-        if not user:
-            users_collection.insert_one({
-                "email": email,
-                "name": data.get('name', ''),
-                "password": password, 
-                "activeWagers": [],
-                "pastWagers": [],
-                "balance": 0,
-                "pendingInvitations": []
-            })
-        return jsonify({"message": "Logged in successfully!"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
+    name = data.get('name', '')
 
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+
+    try:
+        user = users_collection.find_one({"email": email})
+        if user:
+            if not verify_password(password, user["password"]):
+                return jsonify({"error": "Invalid password"}), 401
+            return jsonify({"message": "Logged in successfully!"}), 200
+
+        hashed_password = hash_password(password)
+        users_collection.insert_one({
+            "email": email,
+            "name": name,
+            "password": hashed_password,
+            "activeWagers": [],
+            "pastWagers": [],
+            "balance": 0,
+            "pendingInvitations": []
+        })
+        return jsonify({"message": "New user registered and logged in successfully!"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 @app.route('/getActiveWagers', methods=['GET'])
 def get_active_wagers():
     email = request.args.get('email')
