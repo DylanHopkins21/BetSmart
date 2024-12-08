@@ -366,13 +366,13 @@ def create_wager():
     try:
         users = list(users_collection.find({"email": {"$in": pending_participants}}))
         valid_users = []
-        for user in users:
-            if user['balance'] < entry_amount:
-                return jsonify({"error": f"User {user['email']} does not have sufficient balance"}), 400
-            valid_users.append(user['email'])
+        # for user in users:
+        #     if user['balance'] < entry_amount:
+        #         return jsonify({"error": f"User {user['email']} does not have sufficient balance"}), 400
+        #     valid_users.append(user['email'])
 
-        if not valid_users:
-            return jsonify({"error": "No valid participants found in the database"}), 400
+        # if not valid_users:
+        #     return jsonify({"error": "No valid participants found in the database"}), 400
 
         users_collection.update_many(
             {"email": {"$in": valid_users}},
@@ -662,7 +662,7 @@ def get_courses():
     - Success: 200 with a list of courses and their IDs.
     - Error: 400 for invalid input, 404 for missing user, or 500 for server error.
     """
-    email = request.args.get('email')
+    email = request.json.get('email')
     if not email:
         return jsonify({"error": "Email is required"}), 400
 
@@ -689,7 +689,7 @@ def get_courses():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/getAssignments', methods=['GET'])
+@app.route('/getAssignments', methods=['POST'])
 def get_assignments():
     """
     Retrieve the list of assignments for a specific course.
@@ -705,8 +705,8 @@ def get_assignments():
     - Success: 200 with a list of assignment names and IDs.
     - Error: 400 for invalid input, 404 for missing user or course, or 500 for server error.
     """
-    email = request.args.get('email')
-    course_id = request.args.get('courseId')
+    email = request.json.get('email')
+    course_id = int(request.json.get('courseId'))
 
     if not email or not course_id:
         return jsonify({"error": "Email and courseId are required"}), 400

@@ -18,7 +18,8 @@ export default function CreateWagerConfigs() {
 
     /* TO BE REPLACED*/
     const [classList, setClassList] = useState([]);
-    const assignmentList = ["Ants", "Hog", "Perculation", "Project 1"]
+    const [assignments, setAssignments] = useState<string[][]>([]); // List of lists
+    const [currentAssignmentList, setCurrentAssignmentList] = useState([]);
     /* TO BE REPLACED*/
     const [currentClass, setCurrentClass] = useState("");
     const [currentAssignment, setCurrentAssignment] = useState("");
@@ -42,41 +43,79 @@ export default function CreateWagerConfigs() {
       });
 
       useEffect(() => {
-        const fetchClasses = async () => {
-          // Now you can access user.email and user.password
+        const fetchClassesAndAssignments = async () => {
+          // Ensure email is available
           const email = user?.email;
-            console.log('EMAIL WORKS' + email);
+          console.log('EMAIL WORKS' + email);
           if (!email) {
             console.error("Email is missing.");
             return;
           }
-
+      
           const requestBody = {
             email
           };
       
           try {
-            const response = await fetch('http://127.0.0.1:5000/getCourses', {
-              method: 'POST',  // Change from GET to POST
+            // Fetch courses first
+            const courseResponse = await fetch('http://127.0.0.1:5000/getCourses', {
+              method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify(requestBody),  // Send email in the request body as JSON
+              body: JSON.stringify(requestBody),
             });
       
-            if (response.ok) {
-              const data = await response.json();
-              setClassList(data.courses);  // Assuming `data.courses` contains the list of courses
-            } else {
+            if (!courseResponse.ok) {
               console.error('Failed to fetch courses!!!');
+              return;
             }
+      
+            const courseData = await courseResponse.json();
+            const newClasses: string[][] = [];
+            const newAssignments: string[][] = [];
+      
+            // Store courses and fetch assignments for each course
+            for (let i = 0; i < Math.min(courseData.courses.length, 1); i++) {
+              const courseId = courseData.courses[i].courseId;
+              const courseName = courseData.courses[i].courseName;
+              newClasses.push([courseId, courseName]);
+      
+              // Fetch assignments for the current course
+              const assignmentRequestBody = {
+                email,
+                courseId
+              };
+      
+              const assignmentResponse = await fetch('http://127.0.0.1:5000/getAssignments', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(assignmentRequestBody),
+              });
+      
+              if (assignmentResponse.ok) {
+                const assignmentData = await assignmentResponse.json();
+                const assignmentList: string[] = assignmentData.assignments.map((assignment: any) => assignment.assignmentName);
+                newAssignments.push(assignmentList);
+              } else {
+                console.error(`Failed to fetch assignments for course ${courseId}`);
+                newAssignments.push([]);  // Push an empty array for courses without assignments
+              }
+            }
+      
+            // Update state with fetched classes and assignments
+            setClassList(newClasses);
+            setAssignments(newAssignments);
+      
           } catch (error) {
-            console.error('Error fetching courses:', error);
+            console.error('Error fetching data:', error);
           }
         };
       
-        fetchClasses();
-      }, [user]);  // Add user as a dependency to re-run the effect when the user data changes
+        fetchClassesAndAssignments();
+      }, [user]); // Dependencies array will re-run the effect whenever `user` changes
       
       
 
@@ -89,14 +128,25 @@ export default function CreateWagerConfigs() {
             setWagerAmount(0);
         }
       };
+
+      const getCurrentClassIndex= () => {
+            for (let i = 0; i < classList.length; i++) {
+                if (classList[i][1] == currentClass) {
+                    return i;
+                }
+            }
+            return 0;
+      }
     
       const handleClassChange = (event: SelectChangeEvent<string>) => {
         const value = event.target.value as string;
+        console.log('HIFEHIFhjeowfhoiehwfoe' + value);
         setCurrentClass(value);
       }
 
       const handleAssignmentChange = (event: SelectChangeEvent<string>) => {
         const value = event.target.value as string;
+        console.log('oiwehfgowefjhweofjhowjefioew' + value);
         setCurrentAssignment(value);
       }
 
@@ -145,7 +195,48 @@ export default function CreateWagerConfigs() {
       }
 
 
-      const handleSubmit = () => {
+      const handleSubmit = async() => {
+        if (currentClass && currentAssignment && wagerAmount !== 0 && emailList.length > 0 && image) {
+            try {
+              // Build the request body
+              const requestBody = {
+                creatorsEmail: user?.email,  // Use user email for the creator's email
+                pendingParticipants: emailList,  // Use the email list as participants
+                entryAmount: wagerAmount,  // Use the wager amount
+                courseId: classList[getCurrentClassIndex()][0],  // Get courseId using the current class index
+                assignmentId: currentAssignment,  // Use the selected assignment
+                prize: wagerAmount * emailList.length,  // Set the prize amount
+                class: currentClass,  // Current class name
+                assignment: currentAssignment,  // Current assignment name
+                semester: "Fall 2024",  // Set the semester (you can change it to dynamic if needed)
+                endTime: "2024-12-31T23:59:59Z",  // Set end time (you can modify as needed)
+              };
+        
+              // Send the POST request to create the wager
+              const response = await fetch('http://127.0.0.1:5000/createWager', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+              });
+        
+              if (response.ok) {
+                // If successful, you can handle the success (e.g., navigate to another page)
+                console.log("LFGGGGG");
+                router.push('/dashboard');  // Redirect to a confirmation page (modify this path as needed)
+              } else {
+                console.error('Failed to create wager!');
+                alert('There was an issue creating your wager. Please try again.');
+              }
+            } catch (error) {
+              console.error('Error during wager creation:', error);
+              alert('An error occurred while creating your wager. Please try again.');
+            }
+          } else {
+            alert('All required fields must be filled.');
+          }
+
         if (currentClass && currentAssignment && wagerAmount !== 0 && emailList.length > 0) {
           router.push('/dashboard'); 
         } else {
@@ -180,7 +271,7 @@ export default function CreateWagerConfigs() {
                         >
                         {classList.map((className) => (
                             <MenuItem key={className} value={className}>
-                            {className}
+                            {className[1]}
                             </MenuItem>
                         ))}
                         </Select>
@@ -197,11 +288,15 @@ export default function CreateWagerConfigs() {
                         label="Select a Assigment"
                         className='custom-select'
                         >
-                        {assignmentList.map((aName) => (
-                            <MenuItem key={aName} value={aName}>
-                            {aName}
-                            </MenuItem>
-                        ))}
+                        {assignments.length > 0 && assignments[getCurrentClassIndex()] ? (
+                            assignments[getCurrentClassIndex()].map((aName) => (
+                                <MenuItem key={aName} value={aName}>
+                                {aName}
+                                </MenuItem>
+                            ))
+                            ) : (
+                            <MenuItem value="">No assignments available</MenuItem>
+                            )}
                         </Select>
                     </FormControl>
                     <div className="select-spacer"></div>
@@ -268,7 +363,8 @@ export default function CreateWagerConfigs() {
                                 sx={{color: 'white', 
                                 fontFamily: 'inherit', fontSize: 'large', 
                                 fontWeight: 'bold'
-                                }}>
+                                }}
+                                >
                                     SUBMIT
                                 </Button>
                             </div>
