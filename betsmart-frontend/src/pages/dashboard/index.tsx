@@ -11,7 +11,7 @@ const Dashboard = () => {
   const email = user?.email;
   const password = user?.password;
 
-  console.log(email + " " + password + " " + user);
+  console.log(email + " " + user);
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">

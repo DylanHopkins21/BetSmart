@@ -6,10 +6,15 @@ from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 load_dotenv()
 
 app = Flask(__name__)
+# Explicitly allow cross-origin requests from the frontend domain
+CORS(app, origins="http://localhost:3000")  # This allows all routes to accept requests from your frontend
+
+
 
 # MongoDB Connection
 uri = os.getenv("URI")
@@ -642,7 +647,7 @@ def get_pending_invitations():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/getCourses', methods=['GET'])
+@app.route('/getCourses', methods=['POST'])
 def get_courses():
     """
     Retrieve the list of courses available to a user.

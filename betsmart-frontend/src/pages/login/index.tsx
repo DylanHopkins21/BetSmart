@@ -1,4 +1,3 @@
-// src/pages/login/Login.tsx
 import React, { useState } from "react";
 import { useUser } from "../../contexts/UserContext"; // Import custom hook
 import { useRouter } from "next/router"; // Import useRouter for redirect
@@ -11,16 +10,47 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();  // Initialize useRouter
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    login({ email, password });  // Set user in context
-    console.log("Logged in as:", email);
-    router.push("/dashboard");  // Redirect after login
+
+    // Create the request body (JSON data)
+    const requestBody = {
+      email,
+      password
+    };
+
+    try {
+      // Send POST request to Flask backend
+      const response = await fetch('http://127.0.0.1:5000/gradescopeAuth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Indicate that we're sending JSON
+        },
+        body: JSON.stringify(requestBody), // Send the request body as a JSON string
+      });
+
+      // Check if the response was successful
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Success:", data);
+
+        // If the backend returns success, we can store the user in context and redirect
+        login({ email, password });  // Set user in context
+        console.log("Logged in as:", email);
+        router.push("/dashboard");  // Redirect after login
+      } else {
+        const errorData = await response.json();
+        console.log("Error:", errorData);
+        // Optionally, handle error responses (e.g., display error message to the user)
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
   };
 
   return (
     <div className="container">
-        <Image
+      <Image
         src="/images/betsmartlogo-black.png" // Path to the image in your project
         alt="Description of the image"
         width={100} // Specify the width of the image in pixels

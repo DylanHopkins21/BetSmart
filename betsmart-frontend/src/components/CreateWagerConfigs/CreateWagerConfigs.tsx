@@ -1,12 +1,13 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Button, styled} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CreateWagerConfigs.css';
 import { FaDollarSign } from "react-icons/fa";
 import EmailTag from '../EmailTag/EmailTag';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { RxCross2 } from "react-icons/rx";
+import { useUser } from "@/contexts/UserContext";
 /*
     props.classes : List of String of class names
     props.assignments : Dictionary w/ String class names as keys and List of String assignment names as values
@@ -16,10 +17,9 @@ import { RxCross2 } from "react-icons/rx";
 export default function CreateWagerConfigs() {
 
     /* TO BE REPLACED*/
-    const classList = ["CS61A", "CS61B", "CS61C", "CS70"]; 
+    const [classList, setClassList] = useState([]);
     const assignmentList = ["Ants", "Hog", "Perculation", "Project 1"]
     /* TO BE REPLACED*/
-
     const [currentClass, setCurrentClass] = useState("");
     const [currentAssignment, setCurrentAssignment] = useState("");
     const [wagerAmount, setWagerAmount] = useState(0);
@@ -27,6 +27,7 @@ export default function CreateWagerConfigs() {
     const [emailList, setEmailList] = useState<string[]>([]);
     const [emailInput, setEmailInput] = useState("");
     const router = useRouter();
+    const { user } = useUser(); 
 
     const VisuallyHiddenInput = styled('input')({
         clip: 'rect(0 0 0 0)',
@@ -39,6 +40,45 @@ export default function CreateWagerConfigs() {
         whiteSpace: 'nowrap',
         width: 1,
       });
+
+      useEffect(() => {
+        const fetchClasses = async () => {
+          // Now you can access user.email and user.password
+          const email = user?.email;
+            console.log('EMAIL WORKS' + email);
+          if (!email) {
+            console.error("Email is missing.");
+            return;
+          }
+
+          const requestBody = {
+            email
+          };
+      
+          try {
+            const response = await fetch('http://127.0.0.1:5000/getCourses', {
+              method: 'POST',  // Change from GET to POST
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(requestBody),  // Send email in the request body as JSON
+            });
+      
+            if (response.ok) {
+              const data = await response.json();
+              setClassList(data.courses);  // Assuming `data.courses` contains the list of courses
+            } else {
+              console.error('Failed to fetch courses!!!');
+            }
+          } catch (error) {
+            console.error('Error fetching courses:', error);
+          }
+        };
+      
+        fetchClasses();
+      }, [user]);  // Add user as a dependency to re-run the effect when the user data changes
+      
+      
 
     const handleWagerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
